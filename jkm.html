@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esame di Conversazione - Al-Alsun Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        itGreen: '#008C45',
+                        itDark: '#111111',
+                        itOffWhite: '#F4F6F8',
+                        itRed: '#CD212A'
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #F4F6F8;
+            color: #111111;
+        }
+        .font-it { font-family: 'Outfit', sans-serif; }
+        
+        /* Italian Top Accent Bar */
+        .italy-bar {
+            background: linear-gradient(90deg, #008C45 0%, #008C45 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #CD212A 66.6%, #CD212A 100%);
+        }
+
+        /* Equalizer Animation */
+        .eq-bar { transition: height 0.15s ease; }
+        .playing .eq-bar:nth-child(1) { animation: bounce 0.6s infinite ease-in-out alternate; }
+        .playing .eq-bar:nth-child(2) { animation: bounce 0.8s infinite ease-in-out alternate 0.2s; }
+        .playing .eq-bar:nth-child(3) { animation: bounce 0.5s infinite ease-in-out alternate 0.4s; }
+        .playing .eq-bar:nth-child(4) { animation: bounce 0.7s infinite ease-in-out alternate 0.1s; }
+
+        @keyframes bounce {
+            0% { height: 4px; }
+            100% { height: 26px; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #008C45; border-radius: 9999px; }
+        ::-webkit-scrollbar-track { background: #E2E8F0; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-itGreen selection:text-white">
+
+    <!-- Top Italy Flag Line -->
+    <div class="h-2 w-full italy-bar sticky top-0 z-50"></div>
+
+    <!-- Header -->
+    <header class="bg-itDark text-white sticky top-2 z-40 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-itGreen text-white flex items-center justify-center font-black text-2xl shadow-lg border border-white/20">
+                    🇮🇹
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg md:text-xl tracking-tight flex items-center gap-2">
+                        <span>Esame di Conversazione</span>
+                        <span class="bg-itGreen text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Al-Alsun Edition</span>
+                    </h1>
+                    <p class="text-xs text-slate-300">منصة تدريب امتحان المحادثة الشفوي | كلية الألسن - جامعة عين شمس</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Profile Status & Edit Button -->
+                <button onclick="openProfileModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2 border border-white/15">
+                    <i class="fa-solid fa-user-gear text-itGreen"></i>
+                    <span id="profileStatusBtnText">تعديل بياناتي</span>
+                </button>
+
+                <!-- Full Exam Button -->
+                <button onclick="startContinuousExam()" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-itGreen hover:bg-emerald-600 text-white shadow-lg transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-play"></i>
+                    <span>الامتحان المتصل الشامل</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Sidebar: Modules & Vocabulary -->
+        <aside class="lg:col-span-4 space-y-5">
+            
+            <!-- Topics Selector -->
+            <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-itGreen"></i>
+                        <h2 class="font-bold text-sm text-itDark">أقسام المحادثة الأساسية</h2>
+                    </div>
+                    <span id="activeTopicBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-itGreen">قسم 1</span>
+                </div>
+
+                <div class="space-y-2.5" id="topicsContainer">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Profile Summary Box -->
+            <div class="bg-itDark text-white rounded-3xl p-5 shadow-sm space-y-3">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                    <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-id-card text-itGreen"></i>
+                        <span>البيانات المحفوظة للامتحان</span>
+                    </h3>
+                    <button onclick="openProfileModal()" class="text-[11px] text-itGreen hover:underline font-bold">تغيير</button>
+                </div>
+                <div id="profileSummaryBox" class="text-xs space-y-1.5 text-slate-200">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Quick Vocabulary Builder -->
+            <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-font text-itGreen"></i>
+                        <span>كلمات مساعدة للقسم</span>
+                    </h3>
+                </div>
+                <div id="quickVocabList" class="flex flex-wrap gap-1.5">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Right Main Workspace: Question & Interaction -->
+        <section class="lg:col-span-8 space-y-6">
+
+            <!-- Exam Display Card -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden">
+                
+                <!-- Card Banner Header -->
+                <div class="bg-itDark text-white p-5 md:p-6 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span id="currentModuleTag" class="text-xs font-bold text-itGreen tracking-wider uppercase bg-emerald-950/80 px-3 py-1 rounded-full border border-itGreen/40 inline-block mb-1">
+                            Mi Presento - تقديم النفس
+                        </span>
+                        <h3 class="text-lg md:text-xl font-extrabold text-white" id="questionTitle">
+                            السؤال 1 من 4
+                        </h3>
+                    </div>
+
+                    <!-- Audio Speed & Audio Wave -->
+                    <div class="flex items-center gap-3 bg-white/10 px-3 py-2 rounded-2xl border border-white/10">
+                        <div id="eqVisualizer" class="flex items-end gap-1 h-6 px-1">
+                            <div class="eq-bar w-1.5 bg-itGreen rounded-full h-1"></div>
+                            <div class="eq-bar w-1.5 bg-itGreen rounded-full h-1"></div>
+                            <div class="eq-bar w-1.5 bg-itGreen rounded-full h-1"></div>
+                            <div class="eq-bar w-1.5 bg-itGreen rounded-full h-1"></div>
+                        </div>
+
+                        <button id="speedBtn" onclick="toggleAudioSpeed()" class="text-xs font-bold px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-emerald-300 transition-all">
+                            1.0x
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-8 space-y-6">
+
+                    <!-- Question Audio Player & Text -->
+                    <div class="relative bg-itOffWhite rounded-2xl border border-slate-200 p-6 flex flex-col items-center text-center space-y-4">
+                        
+                        <button onclick="playQuestionAudio()" class="w-20 h-20 rounded-full bg-itGreen text-white flex items-center justify-center text-2xl shadow-lg hover:scale-105 active:scale-95 transition-all group relative">
+                            <i id="playIcon" class="fa-solid fa-volume-high group-hover:scale-110 transition-transform"></i>
+                            <span class="absolute -bottom-2 bg-itDark text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-itGreen">نطق السؤال</span>
+                        </button>
+
+                        <div id="qDisplayBox" class="w-full space-y-2 pt-2 transition-all">
+                            <h2 id="questionItalian" class="font-it font-extrabold text-2xl md:text-3xl text-itDark tracking-wide text-left dir-ltr">
+                                --
+                            </h2>
+                            <p id="questionArabic" class="text-slate-600 text-sm font-bold">
+                                --
+                            </p>
+                        </div>
+
+                        <!-- Audio Control Toggles -->
+                        <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
+                            <button onclick="toggleBlurQuestion()" id="blurBtn" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-eye-slash"></i>
+                                <span>إخفاء النص لتدريب الاستماع</span>
+                            </button>
+                            <button onclick="playQuestionAudio(0.7)" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-100 text-itGreen hover:bg-emerald-200 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-turtle"></i>
+                                <span>نطق بطيء جداً</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Student Answer Box -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="font-bold text-sm text-itDark flex items-center gap-2">
+                                <i class="fa-solid fa-microphone text-itGreen"></i>
+                                <span>تدرب على الإجابة هنا (صوتياً أو كتابة):</span>
+                            </label>
+                            <span class="text-xs text-slate-400 font-it">Risposta dello studente</span>
+                        </div>
+
+                        <div class="relative">
+                            <textarea id="studentAnswerInput" rows="3" dir="ltr" class="font-it text-itDark text-lg w-full p-4 rounded-2xl bg-white border border-slate-300 focus:ring-2 focus:ring-itGreen outline-none transition-all placeholder:text-slate-400 placeholder:font-sans placeholder:text-xs" placeholder="Scrivi qui la tua risposta o usa il microfono..."></textarea>
+                            
+                            <button id="speechMicBtn" onclick="toggleSpeech()" class="absolute right-3 bottom-3 w-10 h-10 rounded-xl bg-itOffWhite text-slate-700 hover:bg-itGreen hover:text-white flex items-center justify-center transition-all border border-slate-200">
+                                <i class="fa-solid fa-microphone text-sm"></i>
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-3 pt-1">
+                            <button onclick="verifyAnswer()" class="flex-1 bg-itGreen hover:bg-emerald-600 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>عرض الإجابة النموذجية المخصصة لي</span>
+                            </button>
+                            <button onclick="navigateQuestion(-1)" class="w-12 h-12 rounded-2xl bg-itOffWhite text-itDark hover:bg-slate-200 border border-slate-300 flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button onclick="navigateQuestion(1)" class="w-12 h-12 rounded-2xl bg-itOffWhite text-itDark hover:bg-slate-200 border border-slate-300 flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Model Answer Output -->
+                    <div id="modelFeedbackBox" class="hidden space-y-4 pt-4 border-t border-slate-200 animate-fade-in">
+                        
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-extrabold text-itDark text-sm flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-md bg-itGreen text-white flex items-center justify-center text-xs">✓</span>
+                                    <span>الإجابة النموذجية بناءً على بياناتك المحفوظة:</span>
+                                </h4>
+                                <button onclick="playModelAudio()" class="text-xs bg-itGreen text-white font-bold px-3 py-1.5 rounded-xl hover:bg-emerald-600 transition-all flex items-center gap-1.5">
+                                    <i class="fa-solid fa-play"></i>
+                                    <span>سماع الإجابة</span>
+                                </button>
+                            </div>
+
+                            <p id="modelItalianText" class="font-it font-extrabold text-itGreen text-xl text-left dir-ltr">
+                                --
+                            </p>
+                            <p id="modelArabicText" class="text-slate-700 text-sm font-semibold border-t border-emerald-200 pt-2">
+                                --
+                            </p>
+                        </div>
+
+                        <!-- Examiner Tips & Keywords -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                                <span class="text-xs font-bold text-slate-400 block mb-2">الكلمات الأساسية المستهدفة:</span>
+                                <div id="keywordsBadges" class="flex flex-wrap gap-1.5">
+                                    <!-- Injected JS -->
+                                </div>
+                            </div>
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 flex items-start gap-3">
+                                <i class="fa-solid fa-lightbulb text-amber-600 text-lg mt-0.5"></i>
+                                <div>
+                                    <h5 class="text-xs font-bold text-amber-900 mb-0.5">ملاحظة الدكتورة للامتحان:</h5>
+                                    <p id="examinerTip" class="text-xs text-amber-800 leading-relaxed">
+                                        --
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Profile Setup Modal (Quick Chips & Presets) -->
+    <div id="profileModal" class="fixed inset-0 z-50 hidden bg-itDark/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white max-w-2xl w-full rounded-3xl border border-slate-200 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            
+            <div class="bg-itDark text-white p-5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-itGreen text-white flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base">إعداد بياناتك الشخصية للامتحان</h3>
+                        <p class="text-xs text-slate-400">ستحفظ بياناتك تلقائياً ولن تحتاج لكتابتها مجدداً</p>
+                    </div>
+                </div>
+                <button onclick="closeProfileModal()" class="w-8 h-8 rounded-xl bg-white/10 text-slate-300 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Form Body -->
+            <div class="p-6 overflow-y-auto space-y-5 flex-grow">
+                
+                <!-- Quick Demo Auto-Fill Banner -->
+                <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl flex items-center justify-between">
+                    <span class="text-xs font-bold text-itGreen">هل ترغب بتعبئة البيانات ببيانات نموذجية سريعة؟</span>
+                    <button onclick="autoFillDemoYasser()" class="text-xs bg-itGreen text-white font-bold px-3 py-1.5 rounded-xl hover:bg-emerald-600 transition-all">
+                        تعبئة سريعة (بيانات ياسر)
+                    </button>
+                </div>
+
+                <!-- 1. Personal Basic Info -->
+                <div class="space-y-3">
+                    <h4 class="font-extrabold text-xs uppercase tracking-wider text-itGreen border-b pb-1">1. التقديم الشخصي (Mi Presento)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">الاسم الأول:</label>
+                            <input type="text" id="inputName" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="مثال: Yasser">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">العمر (سنوات):</label>
+                            <input type="number" id="inputAge" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="18">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">مكان السكن:</label>
+                            <input type="text" id="inputCity" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="Cairo">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Physical Description (Chips) -->
+                <div class="space-y-3">
+                    <h4 class="font-extrabold text-xs uppercase tracking-wider text-itGreen border-b pb-1">2. وصف الشكل والملامح (Come sei?)</h4>
+                    
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 block mb-1.5">الطول:</label>
+                        <div class="flex flex-wrap gap-2" id="chipsHeight">
+                            <button type="button" onclick="selectChip('height', 'basso', this)" class="chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700">قصير (basso)</button>
+                            <button type="button" onclick="selectChip('height', 'di media statura', this)" class="chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700">متوسط (di media statura)</button>
+                            <button type="button" onclick="selectChip('height', 'alto', this)" class="chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700">طويل (alto)</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 block mb-1.5">طبيعة الجسم / الوزن الوصفي:</label>
+                        <div class="flex flex-wrap gap-2" id="chipsBody">
+                            <button type="button" onclick="selectChip('body', 'magro', this)" class="chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700">نحيف (magro)</button>
+                            <button type="button" onclick="selectChip('body', 'normale', this)" class="chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700">عادي (normale)</button>
+                            <button type="button" onclick="selectChip('body', 'robusto', this)" class="chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700">قوي/رياضي (robusto)</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">لون الشعر:</label>
+                            <select id="selectHair" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold">
+                                <option value="neri">أسود (neri)</option>
+                                <option value="castani">بني (castani)</option>
+                                <option value="biondi">أشقر (biondi)</option>
+                                <option value="rossi">أحمر (rossi)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">لون العيون:</label>
+                            <select id="selectEyes" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold">
+                                <option value="castani">بني (castani)</option>
+                                <option value="neri">أسود (neri)</option>
+                                <option value="verdi">أخضر (verdi)</option>
+                                <option value="azzurri">أزرق (azzurri)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Family Info -->
+                <div class="space-y-3">
+                    <h4 class="font-extrabold text-xs uppercase tracking-wider text-itGreen border-b pb-1">3. العائلة (La mia famiglia)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">عدد أفراد العائلة إجمالاً:</label>
+                            <input type="number" id="inputFamilyCount" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="8">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">وظيفة الأب:</label>
+                            <select id="selectFatherJob" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold">
+                                <option value="un impiegato statale">موظف حكومي (impiegato statale)</option>
+                                <option value="un insegnante">معلم (insegnante)</option>
+                                <option value="un medico">طبيب (medico)</option>
+                                <option value="un commerciante">تاجر (commerciante)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">وظيفة الأم:</label>
+                            <select id="selectMotherJob" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold">
+                                <option value="casalinga">ربة منزل (casalinga)</option>
+                                <option value="un'insegnante">معلمة (insegnante)</option>
+                                <option value="un medico">طبيبة (medico)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">عدد الأخوات البنات (لو يوجد):</label>
+                            <input type="number" id="inputSistersCount" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="5">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">اسم أختك الموصوفة بالامتحان:</label>
+                            <input type="text" id="inputSisterName" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="Sara">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Friends Info -->
+                <div class="space-y-3">
+                    <h4 class="font-extrabold text-xs uppercase tracking-wider text-itGreen border-b pb-1">4. الصديق المفضل والخروج (Gli amici)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">اسم صديقك المفضل:</label>
+                            <input type="text" id="inputFriendName" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="Ahmed">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">عمر الصديق:</label>
+                            <input type="number" id="inputFriendAge" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="18">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-700 block mb-1">مكان الخروج المفضّل:</label>
+                            <input type="text" id="inputHangoutPlace" class="w-full text-xs p-2.5 rounded-xl bg-itOffWhite border border-slate-300 font-bold" placeholder="al bar o al club">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-slate-100 p-4 border-t flex items-center justify-between">
+                <button onclick="closeProfileModal()" class="text-xs text-slate-500 hover:underline font-bold">إلغاء</button>
+                <button onclick="saveProfileData()" class="bg-itGreen text-white font-extrabold px-6 py-3 rounded-xl hover:bg-emerald-600 transition-all text-xs shadow-md">
+                    حفظ البيانات واستخدامها في الامتحان
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-itDark text-white py-4 border-t border-white/10 text-center text-xs">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>منصة تدريب امتحان المحادثة الشفوي - قسم اللغة الإيطالية (كلية الألسن)</p>
+            <p class="font-it text-itGreen">In bocca al lupo per l'esame! 🇮🇹</p>
+        </div>
+    </footer>
+
+    <!-- App Logic JS -->
+    <script>
+        // Profile Data Object with LocalStorage Fallback
+        let userProfile = {
+            name: 'Yasser',
+            age: 18,
+            city: 'Cairo',
+            height: 'basso',
+            body: 'magro',
+            hair: 'neri',
+            eyes: 'castani',
+            familyCount: 8,
+            fatherJob: 'un impiegato statale',
+            motherJob: 'casalinga',
+            sistersCount: 5,
+            sisterName: 'Sara',
+            friendName: 'Ahmed',
+            friendAge: 18,
+            hangoutPlace: 'al bar o al club'
+        };
+
+        let currentTopicIdx = 0;
+        let currentQuestionIdx = 0;
+        let speechRate = 1.0;
+        let isQuestionBlurred = false;
+        let synth = window.speechSynthesis;
+        let italianVoice = null;
+
+        // Load Voices
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                let voices = synth.getVoices();
+                italianVoice = voices.find(v => v.lang.startsWith('it')) || voices.find(v => v.lang.includes('IT'));
+            }
+        }
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices();
+        }
+
+        // LocalStorage Logic
+        function loadSavedProfile() {
+            const saved = localStorage.getItem('alsun_it_profile');
+            if (saved) {
+                try { userProfile = JSON.parse(saved); } catch(e){}
+            }
+            updateProfileSummaryDisplay();
+        }
+
+        function saveProfileData() {
+            userProfile.name = document.getElementById('inputName').value || 'Yasser';
+            userProfile.age = parseInt(document.getElementById('inputAge').value) || 18;
+            userProfile.city = document.getElementById('inputCity').value || 'Cairo';
+
+            userProfile.hair = document.getElementById('selectHair').value;
+            userProfile.eyes = document.getElementById('selectEyes').value;
+
+            userProfile.familyCount = parseInt(document.getElementById('inputFamilyCount').value) || 4;
+            userProfile.fatherJob = document.getElementById('selectFatherJob').value;
+            userProfile.motherJob = document.getElementById('selectMotherJob').value;
+
+            userProfile.sistersCount = parseInt(document.getElementById('inputSistersCount').value) || 0;
+            userProfile.sisterName = document.getElementById('inputSisterName').value || 'Sara';
+
+            userProfile.friendName = document.getElementById('inputFriendName').value || 'Ahmed';
+            userProfile.friendAge = parseInt(document.getElementById('inputFriendAge').value) || 18;
+            userProfile.hangoutPlace = document.getElementById('inputHangoutPlace').value || 'al bar';
+
+            localStorage.setItem('alsun_it_profile', JSON.stringify(userProfile));
+            updateProfileSummaryDisplay();
+            closeProfileModal();
+            loadQuestion();
+        }
+
+        function autoFillDemoYasser() {
+            document.getElementById('inputName').value = 'Yasser';
+            document.getElementById('inputAge').value = 18;
+            document.getElementById('inputCity').value = 'Cairo';
+
+            setChipSelected('height', 'basso');
+            setChipSelected('body', 'magro');
+
+            document.getElementById('selectHair').value = 'neri';
+            document.getElementById('selectEyes').value = 'castani';
+
+            document.getElementById('inputFamilyCount').value = 8;
+            document.getElementById('selectFatherJob').value = 'un impiegato statale';
+            document.getElementById('selectMotherJob').value = 'casalinga';
+
+            document.getElementById('inputSistersCount').value = 5;
+            document.getElementById('inputSisterName').value = 'Sara';
+
+            document.getElementById('inputFriendName').value = 'Ahmed';
+            document.getElementById('inputFriendAge').value = 18;
+            document.getElementById('inputHangoutPlace').value = 'al bar o al club';
+        }
+
+        // Chip Selector Handler
+        function selectChip(category, val, btnEl) {
+            userProfile[category] = val;
+            const parent = btnEl.parentElement;
+            parent.querySelectorAll('.chip-btn').forEach(b => {
+                b.className = "chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700";
+            });
+            btnEl.className = "chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itGreen text-white shadow-md border border-itGreen";
+        }
+
+        function setChipSelected(category, val) {
+            userProfile[category] = val;
+            const id = category === 'height' ? 'chipsHeight' : 'chipsBody';
+            const parent = document.getElementById(id);
+            if (!parent) return;
+            parent.querySelectorAll('.chip-btn').forEach(b => {
+                if (b.innerText.includes(val)) {
+                    b.className = "chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itGreen text-white shadow-md border border-itGreen";
+                } else {
+                    b.className = "chip-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-itOffWhite border border-slate-300 text-slate-700";
+                }
+            });
+        }
+
+        function updateProfileSummaryDisplay() {
+            const box = document.getElementById('profileSummaryBox');
+            box.innerHTML = `
+                <p>👤 <strong>الاسم:</strong> ${userProfile.name} (${userProfile.age} سنة)</p>
+                <p>📍 <strong>السكن:</strong> ${userProfile.city}</p>
+                <p>📏 <strong>الوصف:</strong> ${userProfile.height} / ${userProfile.body}</p>
+                <p>👨‍👩‍👧‍👦 <strong>العائلة:</strong> ${userProfile.familyCount} أفراد (${userProfile.sistersCount} أخوات)</p>
+                <p>🤝 <strong>الصديق:</strong> ${userProfile.friendName}</p>
+            `;
+        }
+
+        // Questions Generator using Dynamic User Data
+        function getModulesData() {
+            const p = userProfile;
+            return [
+                {
+                    id: 'mi-presento',
+                    title: 'تقديم النفس',
+                    subtitle: 'Mi presento',
+                    icon: 'fa-user-tie',
+                    vocab: ['Mi chiamo', 'Ho ... anni', `Sono del ${p.city}`, `Abito a ${p.city}`, 'Studio all\'università', `${p.height} e ${p.body}`, `Capelli ${p.hair}`, `Occhi ${p.eyes}`],
+                    questions: [
+                        {
+                            qIt: "Come ti chiami e quanti anni hai?",
+                            qAr: "ما اسمك وكم عمرك؟",
+                            modelIt: `Mi chiamo ${p.name} e ho ${p.age} anni.`,
+                            modelAr: `اسمي ${p.name} وعمري ${p.age} سنة.`,
+                            keywords: ["Mi chiamo", "ho ... anni"],
+                            tip: "استخدم فعل Avere للتعبير عن العمر بالإيطالية (Ho 18 anni)."
+                        },
+                        {
+                            qIt: "Di dove sei e dove abiti?",
+                            qAr: "من أين أنت وأين تسكن؟",
+                            modelIt: `Sono del ${p.city} e abito al ${p.city}.`,
+                            modelAr: `أنا من ${p.city} وأسكن في ${p.city}.`,
+                            keywords: [`Sono del ${p.city}`, `abito al ${p.city}`],
+                            tip: "القاهرة تأخذ حرف الجر المركب al Cairo ومع المنشأ del Cairo."
+                        },
+                        {
+                            qIt: "Lavori o studi?",
+                            qAr: "هل تعمل أم تدرس؟",
+                            modelIt: "Studio all'università di Al-Alsun (Ain Shams), nel Dipartimento di Lingua Italiana.",
+                            modelAr: "أدرس في جامعة الألسن (عين شمس)، في قسم اللغة الإيطالية.",
+                            keywords: ["Studio all'università", "Al-Alsun", "Lingua Italiana"],
+                            tip: "احرص على النطق الدقيق لمصطلح Dipartimento di Lingua Italiana."
+                        },
+                        {
+                            qIt: "Come sei? Descriviti.",
+                            qAr: "صف نفسك (الشكل والملامح)؟",
+                            modelIt: `Sono un ragazzo ${p.height} e ${p.body}, ho i capelli ${p.hair} e gli occhi ${p.eyes}.`,
+                            modelAr: `أنا شاب ${p.height === 'basso' ? 'قصير' : 'طويل'} و${p.body === 'magro' ? 'نحيف' : 'عادي'}، وشعري أسود وعيوني بنية.`,
+                            keywords: [p.height, p.body, `capelli ${p.hair}`, `occhi ${p.eyes}`],
+                            tip: "الترتيب المطلوب: (الطول -> الجسم magro -> لون الشعر -> لون العينين)."
+                        }
+                    ]
+                },
+                {
+                    id: 'la-famiglia',
+                    title: 'العائلة',
+                    subtitle: 'La mia famiglia',
+                    icon: 'fa-users',
+                    vocab: [`Famiglia composta da ${p.familyCount}`, 'Genitori', p.fatherJob, p.motherJob, `${p.sistersCount} sorelle`, 'Vado d\'accordo con'],
+                    questions: [
+                        {
+                            qIt: "Da quante persone è composta la tua famiglia?",
+                            qAr: "من كم فرد تتكون عائلتك؟",
+                            modelIt: `La mia famiglia è composta da ${p.familyCount} persone: i miei genitori, le mie ${p.sistersCount} sorelle e io.`,
+                            modelAr: `عائلتي مكونة من ${p.familyCount} أشخاص: والداي، أخواتي البنات الـ ${p.sistersCount}، وأنا.`,
+                            keywords: [`composta da ${p.familyCount} persone`, "genitori", "sorelle"],
+                            tip: "التعبير الموصى به: La mia famiglia è composta da..."
+                        },
+                        {
+                            qIt: "Che lavoro fanno i tuoi genitori?",
+                            qAr: "ماذا يعمل والدك ووالدتك؟",
+                            modelIt: `Mio padre è ${p.fatherJob} e mia madre è ${p.motherJob}.`,
+                            modelAr: `أبي ${p.fatherJob.includes('impiegato') ? 'موظف حكومي' : 'يعمل'} وأمي ${p.motherJob === 'casalinga' ? 'ربة منزل' : 'تعمل'}.`,
+                            keywords: [p.fatherJob, p.motherJob],
+                            tip: "موظف حكومي تعني impiegato statale وربة منزل تعني casalinga."
+                        },
+                        {
+                            qIt: "Descrivi tua sorella.",
+                            qAr: "صف إحدى أخواتك؟",
+                            modelIt: `Mia sorella ${p.sisterName} è una ragazza bassa e magra, ha i capelli neri ed è molto simpatica. Va a scuola.`,
+                            modelAr: `أختي ${p.sisterName} فتاة قصيرة ونحيفة، شعرها أسود ولطيفة جداً. تذهب إلى المدرسة.`,
+                            keywords: ["bassa e magra", "capelli neri", "simpatica"],
+                            tip: "تأكد من تأنيث الصفات عند وصف الأخت (bassa, magra, simpatica)."
+                        },
+                        {
+                            qIt: "Che rapporto hai con la tua famiglia?",
+                            qAr: "ما طبيعة علاقتك بعائلتك؟",
+                            modelIt: "Vado molto d'accordo con i miei genitori e le mie sorelle, e sono molto legato a loro.",
+                            modelAr: "أتفق بشكل جيد جداً مع والداي وأخواتي، وأنا مرتبط بهم كثيراً.",
+                            keywords: ["Vado molto d'accordo", "legato a loro"],
+                            tip: "Vado d'accordo con تعني التوافق والوفاق."
+                        }
+                    ]
+                },
+                {
+                    id: 'gli-amici',
+                    title: 'الأصدقاء',
+                    subtitle: 'Gli amici',
+                    icon: 'fa-user-group',
+                    vocab: [`Migliore amico ${p.friendName}`, 'Studia con me', 'Persona simpatica', 'Intelligente e sincera', 'Fine settimana', 'Uscire insieme'],
+                    questions: [
+                        {
+                            qIt: "Presenta il tuo migliore amico: come si chiama e quanti anni ha?",
+                            qAr: "قدم صديقك المفضل: ما اسمه وكم عمره؟",
+                            modelIt: `Il mio migliore amico si chiama ${p.friendName}, ha ${p.friendAge} anni e studia all'università con me.`,
+                            modelAr: `صديقي المفضل اسمه ${p.friendName}، عمره ${p.friendAge} سنة ويدرس معي في الجامعة.`,
+                            keywords: ["migliore amico", p.friendName, "studia con me"],
+                            tip: "الصديق المفضل il mio migliore amico."
+                        },
+                        {
+                            qIt: "Com'è il suo carattere?",
+                            qAr: "كيف هي شخصيته وطباعه؟",
+                            modelIt: "È una persona molto simpatica, intelligente e sincera.",
+                            modelAr: "إنه شخص لطيف جداً، ذكي وصادق.",
+                            keywords: ["persona simpatica", "intelligente", "sincera"],
+                            tip: "لاحظ أن كلمة persona مؤنثة والصفات التابعة لها تأخذ نهايات المؤنث."
+                        },
+                        {
+                            qIt: "Dove vi incontrate di solito e cosa fate?",
+                            qAr: "أين تلتقون عادة وماذا تفعلون؟",
+                            modelIt: `Ci incontriamo spesso nel fine settimana, il sabato sera ${p.hangoutPlace}, per uscire e parlare insieme.`,
+                            modelAr: `نلتقي غالباً في عطلة نهاية الأسبوع، مساء السبت في ${p.hangoutPlace}، لنخرج ونتحدث معاً.`,
+                            keywords: ["fine settimana", "uscire e parlare"],
+                            tip: "Ci incontriamo تعني نلتقي سوياً."
+                        }
+                    ]
+                }
+            ];
+        }
+
+        // Render Topics Sidebar Cards
+        function renderTopics() {
+            const container = document.getElementById('topicsContainer');
+            container.innerHTML = '';
+            const modules = getModulesData();
+
+            modules.forEach((mod, idx) => {
+                const isActive = idx === currentTopicIdx;
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                    isActive 
+                    ? 'bg-itGreen text-white border-itGreen shadow-md scale-[1.01]' 
+                    : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200'
+                }`;
+                card.onclick = () => {
+                    currentTopicIdx = idx;
+                    currentQuestionIdx = 0;
+                    renderTopics();
+                    loadQuestion();
+                };
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-itGreen'} flex items-center justify-center text-sm">
+                            <i class="fa-solid ${mod.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xs md:text-sm leading-tight">${mod.title}</h4>
+                            <span class="text-[10px] ${isActive ? 'text-emerald-100' : 'text-slate-400'} font-it">${mod.subtitle}</span>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}">
+                        ${mod.questions.length} أسئلة
+                    </span>
+                `;
+                container.appendChild(card);
+            });
+
+            renderQuickVocab();
+        }
+
+        // Load Active Question
+        function loadQuestion() {
+            const modules = getModulesData();
+            const mod = modules[currentTopicIdx];
+            const q = mod.questions[currentQuestionIdx];
+
+            document.getElementById('activeTopicBadge').innerText = `قسم ${currentTopicIdx + 1}`;
+            document.getElementById('currentModuleTag').innerText = `${mod.subtitle} - ${mod.title}`;
+            document.getElementById('questionTitle').innerText = `السؤال ${currentQuestionIdx + 1} من ${mod.questions.length}`;
+
+            document.getElementById('questionItalian').innerText = q.qIt;
+            document.getElementById('questionArabic').innerText = q.qAr;
+
+            document.getElementById('studentAnswerInput').value = '';
+            document.getElementById('modelFeedbackBox').classList.add('hidden');
+
+            isQuestionBlurred = false;
+            applyQuestionBlur();
+        }
+
+        function navigateQuestion(dir) {
+            const modules = getModulesData();
+            const mod = modules[currentTopicIdx];
+
+            if (dir === 1) {
+                if (currentQuestionIdx < mod.questions.length - 1) {
+                    currentQuestionIdx++;
+                } else {
+                    currentTopicIdx = (currentTopicIdx + 1) % modules.length;
+                    currentQuestionIdx = 0;
+                    renderTopics();
+                }
+            } else {
+                if (currentQuestionIdx > 0) {
+                    currentQuestionIdx--;
+                } else {
+                    if (currentTopicIdx > 0) {
+                        currentTopicIdx--;
+                        currentQuestionIdx = modules[currentTopicIdx].questions.length - 1;
+                        renderTopics();
+                    }
+                }
+            }
+            loadQuestion();
+        }
+
+        // TTS Audio Player
+        function playQuestionAudio(rate = null) {
+            if (!('speechSynthesis' in window)) return;
+            synth.cancel();
+
+            const modules = getModulesData();
+            const q = modules[currentTopicIdx].questions[currentQuestionIdx];
+
+            const utterance = new SpeechSynthesisUtterance(q.qIt);
+            utterance.lang = 'it-IT';
+            utterance.rate = rate || speechRate;
+            if (italianVoice) utterance.voice = italianVoice;
+
+            const eq = document.getElementById('eqVisualizer');
+            utterance.onstart = () => eq.classList.add('playing');
+            utterance.onend = () => eq.classList.remove('playing');
+            utterance.onerror = () => eq.classList.remove('playing');
+
+            synth.speak(utterance);
+        }
+
+        function playModelAudio() {
+            if (!('speechSynthesis' in window)) return;
+            synth.cancel();
+
+            const text = document.getElementById('modelItalianText').innerText;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'it-IT';
+            utterance.rate = speechRate;
+            if (italianVoice) utterance.voice = italianVoice;
+
+            synth.speak(utterance);
+        }
+
+        function toggleAudioSpeed() {
+            if (speechRate === 1.0) speechRate = 0.75;
+            else if (speechRate === 0.75) speechRate = 1.25;
+            else speechRate = 1.0;
+            document.getElementById('speedBtn').innerText = speechRate + 'x';
+        }
+
+        function toggleBlurQuestion() {
+            isQuestionBlurred = !isQuestionBlurred;
+            applyQuestionBlur();
+        }
+
+        function applyQuestionBlur() {
+            const box = document.getElementById('qDisplayBox');
+            const btn = document.getElementById('blurBtn');
+            if (isQuestionBlurred) {
+                box.style.filter = "blur(8px)";
+                box.style.opacity = "0.3";
+                btn.innerHTML = `<i class="fa-solid fa-eye"></i><span>إظهار النص</span>`;
+            } else {
+                box.style.filter = "none";
+                box.style.opacity = "1";
+                btn.innerHTML = `<i class="fa-solid fa-eye-slash"></i><span>إخفاء النص لتدريب الاستماع</span>`;
+            }
+        }
+
+        // Verify Student Answer
+        function verifyAnswer() {
+            const modules = getModulesData();
+            const q = modules[currentTopicIdx].questions[currentQuestionIdx];
+
+            document.getElementById('modelItalianText').innerText = q.modelIt;
+            document.getElementById('modelArabicText').innerText = q.modelAr;
+            document.getElementById('examinerTip').innerText = q.tip;
+
+            const userInput = document.getElementById('studentAnswerInput').value.toLowerCase();
+            const keywordsBadges = document.getElementById('keywordsBadges');
+            keywordsBadges.innerHTML = '';
+
+            q.keywords.forEach(kw => {
+                const match = userInput.includes(kw.toLowerCase());
+                const tag = document.createElement('span');
+                tag.className = `text-xs px-2.5 py-1 rounded-xl font-bold border flex items-center gap-1 ${
+                    match 
+                    ? 'bg-emerald-100 text-emerald-800 border-emerald-300' 
+                    : 'bg-amber-100 text-amber-900 border-amber-300'
+                }`;
+                tag.innerHTML = `${match ? '✓' : '•'} ${kw}`;
+                keywordsBadges.appendChild(tag);
+            });
+
+            const feedbackBox = document.getElementById('modelFeedbackBox');
+            feedbackBox.classList.remove('hidden');
+            feedbackBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Render Quick Vocab Chips
+        function renderQuickVocab() {
+            const container = document.getElementById('quickVocabList');
+            container.innerHTML = '';
+            const modules = getModulesData();
+            const mod = modules[currentTopicIdx];
+
+            mod.vocab.forEach(v => {
+                const tag = document.createElement('span');
+                tag.className = "text-[11px] font-it font-bold px-2.5 py-1 rounded-xl bg-itOffWhite text-slate-700 border border-slate-300";
+                tag.innerText = v;
+                container.appendChild(tag);
+            });
+        }
+
+        // Profile Modal Handling
+        function openProfileModal() {
+            document.getElementById('inputName').value = userProfile.name;
+            document.getElementById('inputAge').value = userProfile.age;
+            document.getElementById('inputCity').value = userProfile.city;
+
+            setChipSelected('height', userProfile.height);
+            setChipSelected('body', userProfile.body);
+
+            document.getElementById('selectHair').value = userProfile.hair;
+            document.getElementById('selectEyes').value = userProfile.eyes;
+
+            document.getElementById('inputFamilyCount').value = userProfile.familyCount;
+            document.getElementById('selectFatherJob').value = userProfile.fatherJob;
+            document.getElementById('selectMotherJob').value = userProfile.motherJob;
+
+            document.getElementById('inputSistersCount').value = userProfile.sistersCount;
+            document.getElementById('inputSisterName').value = userProfile.sisterName;
+
+            document.getElementById('inputFriendName').value = userProfile.friendName;
+            document.getElementById('inputFriendAge').value = userProfile.friendAge;
+            document.getElementById('inputHangoutPlace').value = userProfile.hangoutPlace;
+
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        // Full Continuous Exam Flow Mode
+        function startContinuousExam() {
+            currentTopicIdx = 0;
+            currentQuestionIdx = 0;
+            renderTopics();
+            loadQuestion();
+            alert("تم بدء امتحان المحادثة الشامل والمنفصل لجميع الأجزاء بنجاح! استمع للأسئلة وأجب عليها خطوة بخطوة.");
+        }
+
+        // Speech Recognition
+        let rec = null;
+        let isListening = false;
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            rec = new SR();
+            rec.lang = 'it-IT';
+            rec.continuous = false;
+
+            rec.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                const input = document.getElementById('studentAnswerInput');
+                input.value += (input.value ? ' ' : '') + text;
+                stopSpeech();
+            };
+            rec.onerror = () => stopSpeech();
+            rec.onend = () => stopSpeech();
+        }
+
+        function toggleSpeech() {
+            if (!rec) {
+                alert("الإملاء الصوتي غير مدعوم في متصفحك الحالي، يمكنك استخدام الكتابة بدلاً منها.");
+                return;
+            }
+            const btn = document.getElementById('speechMicBtn');
+            if (!isListening) {
+                try {
+                    rec.start();
+                    isListening = true;
+                    btn.className = "absolute right-3 bottom-3 w-10 h-10 rounded-xl bg-itRed text-white flex items-center justify-center animate-pulse";
+                } catch(e) { stopSpeech(); }
+            } else {
+                rec.stop();
+                stopSpeech();
+            }
+        }
+
+        function stopSpeech() {
+            isListening = false;
+            const btn = document.getElementById('speechMicBtn');
+            if (btn) {
+                btn.className = "absolute right-3 bottom-3 w-10 h-10 rounded-xl bg-itOffWhite text-slate-700 hover:bg-itGreen hover:text-white flex items-center justify-center transition-all border border-slate-200";
+            }
+        }
+
+        // App Init
+        loadSavedProfile();
+        renderTopics();
+        loadQuestion();
+    </script>
+</body>
+</html>
